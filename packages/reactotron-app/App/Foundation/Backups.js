@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import Colors from '../Theme/Colors'
 import AppStyles from '../Theme/AppStyles'
 import { inject, observer } from 'mobx-react'
@@ -44,73 +44,65 @@ const Styles = {
   }
 }
 
-@inject('session')
-@observer
-class Backups extends Component {
-  constructor (props) {
-    super(props)
-    this.renderBackup = this.renderBackup.bind(this)
-  }
-
-  renderEmpty () {
-    return (
-      <Empty icon='import-export' title='No Snapshots'>
-        <p>
-          To take a snapshot of your current Redux store, press the Download button in the top right
-          corner of this window.
-        </p>
-      </Empty>
-    )
-  }
-
-  renderBackup (backup, indent = 0) {
-    const { ui } = this.props.session
-    const { restoreState } = ui
-    const { state } = backup.payload
-    const restore = restoreState.bind(this, state)
-    const { messageId, date } = backup
-    const key = `backup-${messageId}`
-    const name = backup.payload.name || moment(date).format('dddd @ h:mm:ss a')
-    const deleteState = event => {
-      ui.deleteState(backup)
-      event.stopPropagation()
-    }
-    const renameState = event => {
-      ui.openRenameStateDialog(backup)
-      event.stopPropagation()
+const Backups = inject('session')(observer(props => {
+    const renderEmpty = () => {
+      return (
+        <Empty icon='import-export' title='No Snapshots'>
+          <p>
+            To take a snapshot of your current Redux store, press the Download button in the top right
+            corner of this window.
+          </p>
+        </Empty>
+      )
     }
 
-    return (
-      <div style={Styles.row} key={key} onClick={restore}>
-        <div style={Styles.name}>{name}</div>
-        <IconRename
-          size={Styles.iconSize}
-          style={Styles.button}
-          onClick={renameState}
-        />
-        <IconDelete
-          size={Styles.iconSize}
-          style={Styles.button}
-          onClick={deleteState}
-        />
-      </div>
-    )
-  }
+    const renderBackup = (backup, indent = 0) => {
+      const { ui } = props.session
+      const { restoreState } = ui
+      const { state } = backup.payload
+      const restore = restoreState.bind(this, state)
+      const { messageId, date } = backup
+      const key = `backup-${messageId}`
+      const name = backup.payload.name || moment(date).format('dddd @ h:mm:ss a')
+      const deleteState = event => {
+        ui.deleteState(backup)
+        event.stopPropagation()
+      }
+      const renameState = event => {
+        ui.openRenameStateDialog(backup)
+        event.stopPropagation()
+      }
 
-  render () {
-    const backups = this.props.session.backups.slice()
+      return (
+        <div style={Styles.row} key={key} onClick={restore}>
+          <div style={Styles.name}>{name}</div>
+          <IconRename
+            size={Styles.iconSize}
+            style={Styles.button}
+            onClick={renameState}
+          />
+          <IconDelete
+            size={Styles.iconSize}
+            style={Styles.button}
+            onClick={deleteState}
+          />
+        </div>
+      )
+    }
+
+    const backups = props.session.backups.slice()
     const isEmpty = backups.length === 0
+
     return (
       <div style={Styles.container}>
         <BackupsHeader />
         {isEmpty
-          ? this.renderEmpty()
+          ? renderEmpty()
           : <div style={Styles.backups}>
-            {backups.map(this.renderBackup)}
+            {backups.map(renderBackup)}
           </div>}
       </div>
     )
-  }
-}
+}))
 
 export default Backups

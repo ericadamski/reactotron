@@ -37,15 +37,14 @@ const Styles = {
   }
 }
 
-const EmptyState = props => {
-  const { icon, title } = props
+const EmptyState = ({ icon, title, children }) => {
   const Icon = require(`react-icons/lib/md/${icon}`)
   return (
     <div style={Styles.container}>
       <div style={Styles.well}>
         <Icon size={100} />
-        <div style={Styles.title}>{title}</div>
-        <div style={Styles.message}>{props.children}</div>
+        <div style={Styles.title}>{ title }</div>
+        <div style={Styles.message}>{ children }</div>
       </div>
     </div>
   )

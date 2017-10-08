@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import Colors from '../Theme/Colors'
 import AppStyles from '../Theme/AppStyles'
 import { inject, observer } from 'mobx-react'
@@ -51,11 +51,8 @@ const Styles = {
   }
 }
 
-@inject('session')
-@observer
-class BackupsHeader extends Component {
-  render () {
-    const { ui } = this.props.session
+const BackupsHeader = inject('session')(observer( ({ session }) => {
+    const { ui } = session
 
     return (
       <div style={Styles.container}>
@@ -70,7 +67,6 @@ class BackupsHeader extends Component {
         </div>
       </div>
     )
-  }
-}
+}))
 
 export default BackupsHeader
